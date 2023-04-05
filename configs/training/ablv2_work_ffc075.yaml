@@ -27,7 +27,7 @@ losses:
   structure:
     weight: 0
   gan_reconstruction:
-    weight: 0
+    weight: 100
   resnet_pl:
     weight: 30
     weights_path: ${env:TORCH_HOME}
