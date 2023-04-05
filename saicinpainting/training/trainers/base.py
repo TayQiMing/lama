@@ -105,7 +105,23 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
             
             if self.config.losses.perceptual.weight > 0:
                 self.loss_pl = PerceptualLoss()
+            
+            ###################### ADDING HERE #########################
+            
+            if self.config.losses.gan_reconstruction.weight > 0:
+                self.loss_gr = GANReconstructionLoss()
 
+            if self.config.losses.structure.weight > 0:
+                self.loss_strl = StructureLoss()
+                
+            if self.config.losses.style.weight > 0:
+                self.loss_styl = StyleLoss()
+                
+            if self.config.losses.total_variational.weight > 0:
+                self.loss_tv = TotalVariationLoss()
+                
+            ############################################################
+                
             if self.config.losses.get("resnet_pl", {"weight": 0})['weight'] > 0:
                 self.loss_resnet_pl = ResNetPL(**self.config.losses.resnet_pl)
             else:
