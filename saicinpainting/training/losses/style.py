@@ -17,7 +17,7 @@ class StyleLoss(torch.nn.Module):
 
     def forward(self, predicted_img, img, mask):
         device = predicted_img.device
-        # resize images to (224, 224) and normalize
+        # resize images to (224, 224) and normalize  - NOTE: resize to 224 is necessary because the Gram matrix calculation requires a fixed input size
         transform = torch.nn.Sequential(
             torch.nn.Upsample(size=(224, 224), mode='bilinear', align_corners=True),
             torch.nn.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
