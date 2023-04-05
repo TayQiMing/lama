@@ -135,6 +135,36 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
             total_loss = total_loss + resnet_pl_value
             metrics['gen_resnet_pl'] = resnet_pl_value
 
+        ##################################   ADDING HERE    ##################################
+        
+        # total variation loss
+        if self.config.losses.total_variation.weight > 0:
+            tv_value = total_variation_loss(predicted_img) * self.config.losses.total_variation.weight
+            total_loss = total_loss + tv_value
+            metrics['gen_tv'] = tv_value
+
+        # style loss (NEED FIND OTHER WAY)
+        if self.config.losses.style.weight > 0:
+            style_value = style_loss(predicted_img, img, mask=supervised_mask) * self.config.losses.style.weight
+            total_loss += style_value
+            metrics['gen_style'] = style_value
+
+        # structure loss
+        if self.config.losses.structure.weight > 0:
+            st_value = loss_structure(predicted_img, img, mask=supervised_mask) * self.config.losses.structure.weight
+            total_loss = total_loss + st_value
+            metrics['gen_st'] = st_value
+
+        # reconstruction loss
+        if self.config.losses.reconstruction.weight > 0:
+            rec_loss = self.reconstruction_loss(predicted_img, img, discr_fake_pred)
+            total_loss = total_loss + rec_loss
+            metrics['gen_rec'] = rec_loss
+            
+        ######################################################################################
+            
+            
+            
         return total_loss, metrics
 
     def discriminator_loss(self, batch):
