@@ -139,25 +139,25 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         
         # total variation loss
         if self.config.losses.total_variation.weight > 0:
-            tv_value = total_variation_loss(predicted_img) * self.config.losses.total_variation.weight
+            tv_value = self.loss_tv(predicted_img) * self.config.losses.total_variation.weight
             total_loss = total_loss + tv_value
             metrics['gen_tv'] = tv_value
 
-        # style loss (NEED FIND OTHER WAY)
+        # style loss
         if self.config.losses.style.weight > 0:
-            style_value = style_loss(predicted_img, img, mask=supervised_mask) * self.config.losses.style.weight
+            style_value = self.loss_styl(predicted_img, img, mask=supervised_mask) * self.config.losses.style.weight
             total_loss += style_value
             metrics['gen_style'] = style_value
 
         # structure loss
         if self.config.losses.structure.weight > 0:
-            st_value = loss_structure(predicted_img, img, mask=supervised_mask) * self.config.losses.structure.weight
+            st_value = self.loss_strl(predicted_img, img, mask=supervised_mask) * self.config.losses.structure.weight
             total_loss = total_loss + st_value
             metrics['gen_st'] = st_value
 
-        # reconstruction loss
-        if self.config.losses.reconstruction.weight > 0:
-            rec_loss = self.reconstruction_loss(predicted_img, img, discr_fake_pred)
+        # GAN based reconstruction loss
+        if self.config.losses.gan_reconstruction.weight > 0:
+            rec_loss = self.loss_gr(predicted_img, img, discr_fake_pred) * self.config.losses.gan_reconstruction.weight
             total_loss = total_loss + rec_loss
             metrics['gen_rec'] = rec_loss
             
