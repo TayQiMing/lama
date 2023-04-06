@@ -13,6 +13,10 @@ from saicinpainting.evaluation import make_evaluator
 from saicinpainting.training.data.datasets import make_default_train_dataloader, make_default_val_dataloader
 from saicinpainting.training.losses.adversarial import make_discrim_loss
 from saicinpainting.training.losses.perceptual import PerceptualLoss, ResNetPL
+from saicinpainting.training.losses.style import StyleLoss
+from saicinpainting.training.losses.structure import StructureLoss
+from saicinpainting.training.losses.gan_reconstruction import GANReconstructionLoss
+from saicinpainting.training.losses.total_variational import TotalVariationLoss
 from saicinpainting.training.modules import make_generator, make_discriminator
 from saicinpainting.training.visualizers import make_visualizer
 from saicinpainting.utils import add_prefix_to_keys, average_dicts, set_requires_grad, flatten_dict, \
