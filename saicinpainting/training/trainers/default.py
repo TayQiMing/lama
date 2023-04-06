@@ -138,7 +138,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         ##################################   ADDING HERE    ##################################
         
         # total variation loss
-        if self.config.losses.total_variation.weight > 0:
+        if self.config.losses.total_variational.weight > 0:
             tv_value = self.loss_tv(predicted_img) * self.config.losses.total_variation.weight
             total_loss = total_loss + tv_value
             metrics['gen_tv'] = tv_value
