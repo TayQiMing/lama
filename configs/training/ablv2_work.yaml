@@ -20,6 +20,14 @@ losses:
     allow_scale_mask: True
   feature_matching:
     weight: 100
+  total_variational:
+    weight: 20
+  style:
+    weight: 0
+  structure:
+    weight: 0
+  gan_reconstruction:
+    weight: 11
   resnet_pl:
     weight: 30
     weights_path: ${env:TORCH_HOME}
