@@ -5,25 +5,11 @@ import torch.nn.functional as F
 import torch
 import torch.nn.functional as F
 
-def masked_l1_loss(predicted_img, img, mask, weight_known=1.0, weight_missing=0.0):
-    """
-    Computes the L1 loss between two images, but ignores the pixels specified by the mask.
+def masked_l1_loss(pred, target, mask, weight_known, weight_missing):
+    per_pixel_l1 = F.l1_loss(pred, target, reduction='none')
+    pixel_weights = mask * weight_missing + (1 - mask) * weight_known
+    return (pixel_weights * per_pixel_l1).mean()
 
-    Args:
-        predicted_img (torch.Tensor): The predicted image.
-        img (torch.Tensor): The ground truth image.
-        mask (torch.Tensor): A binary mask indicating which pixels to ignore.
-        weight_known (float, optional): The weight to give to known pixels (i.e., where mask == 1).
-        weight_missing (float, optional): The weight to give to missing pixels (i.e., where mask == 0).
-
-    Returns:
-        torch.Tensor: The masked L1 loss between the two images.
-    """
-    diff = predicted_img - img
-    diff = diff * mask
-    weighted_diff = weight_known * torch.abs(diff) + weight_missing * torch.abs(diff) * (1 - mask)
-    loss = torch.sum(weighted_diff) / torch.sum(mask)
-    return loss
 
 class GANReconstructionLoss(torch.nn.Module):
     def __init__(self):
