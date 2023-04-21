@@ -39,7 +39,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         self.refine_mask_for_losses = make_mask_distance_weighter(**distance_weighter_kwargs) \
             if distance_weighter_kwargs is not None else None
         self.distance_weighted_mask_for_discr = distance_weighted_mask_for_discr
-
+        print("====== ！@#￥%……& ======== The image_to_discriminator is: ", image_to_discriminator)
         self.fake_fakes_proba = fake_fakes_proba
         if self.fake_fakes_proba > 1e-3:
             self.fake_fakes_gen = FakeFakesGenerator(**(fake_fakes_generator_kwargs or {}))
@@ -69,7 +69,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
 
         batch['predicted_image'] = self.generator(masked_img)
         batch['inpainted'] = mask * batch['predicted_image'] + (1 - mask) * batch['image']
-        print("￥￥￥￥￥ PRODUCE PREDICTED IMAGE ￥￥￥￥￥")
+        print("￥￥￥￥￥ PRODUCE PREDICTED IMAGE ￥￥￥￥￥"), print("====== ！@#￥%……& ======== The batch['predicted_image'] is: ", batch['predicted_image'])
         if self.fake_fakes_proba > 1e-3:
             if self.training and torch.rand(1).item() < self.fake_fakes_proba:
                 batch['fake_fakes'], batch['fake_fakes_masks'] = self.fake_fakes_gen(img, mask)
@@ -90,7 +90,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         predicted_img = batch[self.image_to_discriminator]
         original_mask = batch['mask']
         supervised_mask = batch['mask_for_losses']
-        print("￥￥￥￥￥ USE PREDICTED IMAGE ￥￥￥￥￥")
+        print("￥￥￥￥￥ USE PREDICTED IMAGE ￥￥￥￥￥"),print("====== ！@#￥%……& ======== The predicted_img is: ", predicted_img)
         # L1
         l1_value = masked_l1_loss(predicted_img, img, supervised_mask,
                                   self.config.losses.l1.weight_known,
