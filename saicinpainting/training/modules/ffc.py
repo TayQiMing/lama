@@ -362,8 +362,10 @@ class FFCResNetGenerator(nn.Module):
         if add_out_act:
             model.append(get_activation('tanh' if add_out_act is True else add_out_act))
         self.model = nn.Sequential(*model)
+        print(***!!!!!!**** FFCResNetGenerator INITIALIZE ****!!!!!!*****)
 
     def forward(self, input):
+        print(***!!!!!!**** FFCResNetGenerator FORWARD ****!!!!!!*****)
         return self.model(input)
 
 
