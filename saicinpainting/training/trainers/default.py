@@ -69,7 +69,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
 
         batch['predicted_image'] = self.generator(masked_img)
         batch['inpainted'] = mask * batch['predicted_image'] + (1 - mask) * batch['image']
-
+        print("￥￥￥￥￥ PRODUCE PREDICTED IMAGE ￥￥￥￥￥")
         if self.fake_fakes_proba > 1e-3:
             if self.training and torch.rand(1).item() < self.fake_fakes_proba:
                 batch['fake_fakes'], batch['fake_fakes_masks'] = self.fake_fakes_gen(img, mask)
@@ -90,7 +90,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
         predicted_img = batch[self.image_to_discriminator]
         original_mask = batch['mask']
         supervised_mask = batch['mask_for_losses']
-
+        print("￥￥￥￥￥ USE PREDICTED IMAGE ￥￥￥￥￥")
         # L1
         l1_value = masked_l1_loss(predicted_img, img, supervised_mask,
                                   self.config.losses.l1.weight_known,
