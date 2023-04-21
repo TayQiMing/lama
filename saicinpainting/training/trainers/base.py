@@ -166,6 +166,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
 
     def training_step(self, batch, batch_idx, optimizer_idx=None):
         self._is_training_step = True
+        print("^^^^^ TRAINING STEP ^^^^^")
         return self._do_step(batch, batch_idx, mode='train', optimizer_idx=optimizer_idx)
 
     def validation_step(self, batch, batch_idx, dataloader_idx):
@@ -178,6 +179,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
             mode = 'extra_val'
             extra_val_key = self.extra_val_titles[dataloader_idx - 2]
         self._is_training_step = False
+        print("^^^^^ VALIDATION STEP ^^^^^")
         return self._do_step(batch, batch_idx, mode=mode, extra_val_key=extra_val_key)
 
     def training_step_end(self, batch_parts_outputs):
@@ -195,6 +197,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
                      else torch.tensor(batch_parts_outputs['loss']).float().requires_grad_(True))
         log_info = {k: v.mean() for k, v in batch_parts_outputs['log_info'].items()}
         self.log_dict(log_info, on_step=True, on_epoch=False)
+        print("^^^^^ TRAINING STEP END ^^^^^")
         return full_loss
 
     def validation_epoch_end(self, outputs):
@@ -230,6 +233,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
 
         # extra validations
         if self.extra_evaluators:
+            print("^^^^^ extra_validations ^^^^^")
             for cur_eval_title, cur_evaluator in self.extra_evaluators.items():
                 cur_state_key = f'extra_val_{cur_eval_title}_evaluator_state'
                 cur_states = [s[cur_state_key] for s in outputs if cur_state_key in s]
@@ -240,6 +244,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
                             f'total {self.global_step} iterations:\n{cur_evaluator_res_df}')
                 for k, v in flatten_dict(cur_evaluator_res).items():
                     self.log(f'extra_val_{cur_eval_title}_{k}', v)
+        print("^^^^^ VALIDATION STEP END ^^^^^")
 
     def _do_step(self, batch, batch_idx, mode='train', optimizer_idx=None, extra_val_key=None):
         if optimizer_idx == 0:  # step for generator
@@ -249,6 +254,7 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
             set_requires_grad(self.generator, False)
             set_requires_grad(self.discriminator, True)
 
+        print("^^^^^ DO STEP ^^^^^")
         batch = self(batch)
 
         total_loss = 0
@@ -256,10 +262,12 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
 
         if optimizer_idx is None or optimizer_idx == 0:  # step for generator
             total_loss, metrics = self.generator_loss(batch)
+            print("%%%%% CALCULATE GENERATOR %%%%%")
 
         elif optimizer_idx is None or optimizer_idx == 1:  # step for discriminator
             if self.config.losses.adversarial.weight > 0:
                 total_loss, metrics = self.discriminator_loss(batch)
+                print("%%%%% CALCULATE DISCRIMINATOR %%%%%")
 
         if self.get_ddp_rank() in (None, 0) and (batch_idx % self.visualize_each_iters == 0 or mode == 'test'):
             if self.config.losses.adversarial.weight > 0:
@@ -281,22 +289,27 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
             result['test_evaluator_state'] = self.test_evaluator.process_batch(batch)
         elif mode == 'extra_val':
             result[f'extra_val_{extra_val_key}_evaluator_state'] = self.extra_evaluators[extra_val_key].process_batch(batch)
-
+        
+        print("^^^^^ DO STEP END ^^^^^")
         return result
 
     def get_current_generator(self, no_average=False):
+        print("----- base_get_generator -----")
         if not no_average and not self.training and self.average_generator and self.generator_average is not None:
             return self.generator_average
         return self.generator
 
     def forward(self, batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         """Pass data through generator and obtain at leas 'predicted_image' and 'inpainted' keys"""
+        print("----- base_forward -----")
         raise NotImplementedError()
 
     def generator_loss(self, batch) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+        print("----- generator_loss -----")
         raise NotImplementedError()
 
     def discriminator_loss(self, batch) -> Tuple[torch.Tensor, Dict[str, torch.Tensor]]:
+        print("----- discriminator_loss -----")
         raise NotImplementedError()
 
     def store_discr_outputs(self, batch):
