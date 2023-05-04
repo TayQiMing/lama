@@ -42,7 +42,7 @@ class ContextualLoss(torch.nn.Module):
         min_dist, _ = torch.min(dist_matrix, dim=1, keepdim=True)
         print('HERE HERE min dist -> ',min_dist)
         # calculate the mask for valid pixels
-        valid_pixels_mask = mask.expand_as(min_dist)
+        valid_pixels_mask = F.interpolate(mask, size=min_dist.shape[-2:], mode='nearest').expand_as(min_dist)
         valid_pixels_mask[min_dist > self.alpha] = 0
         
         # calculate the contextual loss using the valid pixels mask
