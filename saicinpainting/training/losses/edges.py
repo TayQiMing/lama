@@ -15,7 +15,7 @@ class EdgeLoss(nn.Module):
         #self.device = device
         
     def forward(self, predicted, target, mask):
-        device = predicted_img.device
+        device = predicted.device
 
         # Calculate the Canny edge maps
         pred_edges = self.calc_canny_edge_maps(predicted)
