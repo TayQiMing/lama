@@ -36,7 +36,7 @@ losses:
     weight: 10
   HAD:
     weight: 10
-  msssim:
+  MSSSIM:
     weight: 10
   resnet_pl:
     weight: 30
