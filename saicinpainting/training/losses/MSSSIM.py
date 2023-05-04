@@ -57,7 +57,7 @@ class MSSSIMLoss(torch.nn.Module):
 
         msssim_val = torch.tensor(1.0, device=img1.device)
         for i in range(levels):
-            ssim_map = ssim(img1, img2)
+            ssim_map = self.ssim(img1, img2)
             msssim_val *= ssim_map ** self.weights[i]
 
             # Downsample images
