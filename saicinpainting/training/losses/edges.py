@@ -1,3 +1,5 @@
+import numpy as np
+import cv2
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -43,10 +45,16 @@ class EdgeLoss(nn.Module):
         # Convert the image to grayscale
         gray_img = torch.mean(img, dim=1, keepdim=True)
         
-        # Compute the Canny edge map
-        edges = F.canny(gray_img, sigma=sigma)
-        
+        # Convert the PyTorch tensor to a NumPy array
+        np_img = gray_img.cpu().numpy()[0, 0, :, :]
+
+        # Compute the Canny edge map using OpenCV
+        edges = cv2.Canny(np.uint8(255 * np_img), 100, 200) / 255.0
+
+        # Convert the NumPy array back to a PyTorch tensor
+        edges = torch.FloatTensor(edges)[None, None, :, :].to(img.device)
+
         # Expand the edge map to match the dimensions of the input image
         edges = edges.expand_as(img)
-        
+
         return edges
