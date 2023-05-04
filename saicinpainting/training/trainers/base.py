@@ -17,6 +17,12 @@ from saicinpainting.training.losses.style import StyleLoss
 from saicinpainting.training.losses.structure import StructureLoss
 from saicinpainting.training.losses.gan_reconstruction import GANReconstructionLoss
 from saicinpainting.training.losses.total_variational import TotalVariationLoss
+from saicinpainting.training.losses.contextual import ContextualLoss
+from saicinpainting.training.losses.gradient_different import GradientDifferenceLoss
+from saicinpainting.training.losses.edges import EdgeLoss
+from saicinpainting.training.losses.HAD import HADLoss
+from saicinpainting.training.losses.msssim import MSSSIMLoss
+
 from saicinpainting.training.modules import make_generator, make_discriminator
 from saicinpainting.training.visualizers import make_visualizer
 from saicinpainting.utils import add_prefix_to_keys, average_dicts, set_requires_grad, flatten_dict, \
@@ -124,6 +130,21 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
             if self.config.losses.total_variational.weight > 0:
                 self.loss_tv = TotalVariationLoss()
                 
+            if self.config.losses.contextual.weight > 0:
+                self.loss_ctxt = ContextualLoss()
+                
+            if self.config.losses.edges.weight > 0:
+                self.loss_edges = EdgeLoss()
+                
+            if self.config.losses.gradient_different.weight > 0:
+                self.loss_gd = GradientDifferenceLoss()
+                
+            if self.config.losses.HAD.weight > 0:
+                self.loss_had = HADLoss()
+                
+            if self.config.losses.MSSSIM.weight > 0:
+                self.loss_msssim = MSSSIMLoss()
+
             ############################################################
                 
             if self.config.losses.get("resnet_pl", {"weight": 0})['weight'] > 0:
