@@ -45,6 +45,8 @@ class MSSSIMLoss(torch.nn.Module):
     def forward(self, img1, img2):
         """
         Computes the Multi-Scale Structural Similarity Index (MS-SSIM) loss between two images.
+        img1: groundtruth image
+        img2: predicted image
         """
         levels = 5
         device = img1.device
