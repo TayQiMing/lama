@@ -41,7 +41,7 @@ class EdgeLoss(nn.Module):
     
     def calc_canny_edge_maps(self, img, sigma=1.0):
         # Convert the image to grayscale
-        gray_img = F.rgb_to_grayscale(img)
+        gray_img = torch.mean(img, dim=1, keepdim=True)
         
         # Compute the Canny edge map
         edges = F.canny(gray_img, sigma=sigma)
