@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 class MSSSIMLoss(torch.nn.Module):
     def __init__(self,window_size=11, size_average=True, full=False, weights=None):
-        super(HADLoss, self).__init__()
+        super(MSSSIMLoss, self).__init__()
         self.window_size = window_size
         self.size_average = size_average
         self.full = full
