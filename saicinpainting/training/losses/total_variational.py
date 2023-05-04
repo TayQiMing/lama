@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 
-class TVLoss(torch.nn.Module):
+class TotalVariationLoss(torch.nn.Module):
     def __init__(self):
         super(TVLoss, self).__init__()
         self.conv_h = torch.nn.Conv2d(1, 1, kernel_size=(1, 2), stride=1, padding=0, bias=False)
