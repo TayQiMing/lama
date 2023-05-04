@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torchvision import models
 
 class EdgeLoss(nn.Module):
-    def __init__(self, device):
+    def __init__(self):
         super(EdgeLoss, self).__init__()
         
         # Load VGG19 model to extract feature maps
@@ -12,7 +12,7 @@ class EdgeLoss(nn.Module):
         for param in self.vgg.parameters():
             param.requires_grad = False
         
-        #self.device = device
+
         
     def forward(self, predicted, target, mask):
         device = predicted.device
@@ -35,7 +35,7 @@ class EdgeLoss(nn.Module):
         loss = 0.5 * feature_loss + 0.5 * edge_loss
         
         # Apply the mask to the loss
-        loss = torch.mean(loss * mask.to(self.device))
+        loss = torch.mean(loss * mask.to(device))
         
         return loss
     
