@@ -21,7 +21,7 @@ from saicinpainting.training.losses.contextual import ContextualLoss
 from saicinpainting.training.losses.gradient_different import GradientDifferenceLoss
 from saicinpainting.training.losses.edges import EdgeLoss
 from saicinpainting.training.losses.HAD import HADLoss
-from saicinpainting.training.losses.msssim import MSSSIMLoss
+from saicinpainting.training.losses.MSSSIM import MSSSIMLoss
 
 from saicinpainting.training.modules import make_generator, make_discriminator
 from saicinpainting.training.visualizers import make_visualizer
