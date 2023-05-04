@@ -17,20 +17,24 @@ class MSSSIMLoss(torch.nn.Module):
         device = img1.device
 
         # Define window
-        window = torch.ones((self.window_size, self.window_size), dtype=torch.float32, device=device)
-        window = window / (self.window_size ** 2)
+        #window = torch.ones((self.window_size, self.window_size), dtype=torch.float32, device=device)
+        #window = window / (self.window_size ** 2)
 #         window = window.view(1, 1, self.window_size, self.window_size).repeat(1, 3, 1, 1)
+        window = torch.tensor([[0.1520, 0.2196, 0.1520],
+                               [0.2196, 0.3183, 0.2196],
+                               [0.1520, 0.2196, 0.1520]], dtype=torch.float32, device=device)
+        window = window.view(1, 3, self.window_size, self.window_size).repeat(1, 3, 1, 1)
 
         # Compute means and variances
-        mu1 = F.conv2d(img1, window.unsqueeze(0).unsqueeze(0), stride=1, padding=self.window_size//2, groups=3)
-        mu2 = F.conv2d(img2, window.unsqueeze(0).unsqueeze(0), stride=1, padding=self.window_size//2, groups=3)
+        mu1 = F.conv2d(torch.cat((img1,img1,img1),dim=1), window, stride=1, padding=self.window_size//2, groups=3)
+        mu2 = F.conv2d(torch.cat((img2,img2,img2),dim=1), window, stride=1, padding=self.window_size//2, groups=3)
         mu1_sq = mu1.pow(2)
         mu2_sq = mu2.pow(2)
         mu1_mu2 = mu1 * mu2
 
-        sigma1_sq = F.conv2d(img1 * img1, window.unsqueeze(0).unsqueeze(0), stride=1, padding=self.window_size//2, groups=3) - mu1_sq
-        sigma2_sq = F.conv2d(img2 * img2, window.unsqueeze(0).unsqueeze(0), stride=1, padding=self.window_size//2, groups=3) - mu2_sq
-        sigma12 = F.conv2d(img1 * img2, window.unsqueeze(0).unsqueeze(0), stride=1, padding=self.window_size//2, groups=3) - mu1_mu2
+        sigma1_sq = F.conv2d(torch.cat((img1*img1,img1*img1,img1*img1),dim=1), window, stride=1, padding=self.window_size//2, groups=3) - mu1_sq
+        sigma2_sq = F.conv2d(torch.cat((img2*img2,img2*img2,img2*img2),dim=1), window, stride=1, padding=self.window_size//2, groups=3) - mu2_sq
+        sigma12 = F.conv2d(torch.cat((img1*img2,img1*img2,img1*img2),dim=1), window, stride=1, padding=self.window_size//2, groups=3) - mu1_mu2
 
         # Compute SSIM
         c1 = 0.01 ** 2
