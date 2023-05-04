@@ -27,6 +27,16 @@ losses:
     weight: 0
   gan_reconstruction:
     weight: 0
+  contextual:
+    weight: 10
+  edges:
+    weight: 10
+  gradient_different:
+    weight: 10
+  HAD:
+    weight: 10
+  MSSSIM:
+    weight: 10
   resnet_pl:
     weight: 30
     weights_path: ${env:TORCH_HOME}
