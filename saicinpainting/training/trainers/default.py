@@ -151,7 +151,8 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
 
         # structure loss
         if self.config.losses.structure.weight > 0:
-            st_value = self.loss_strl(predicted_img, img, mask=supervised_mask) * self.config.losses.structure.weight
+            st_value = self.loss_strl(predicted_img, img, mask=supervised_mask) * self.config.losses.structure.weight  # supervised_mask for image inpainting task
+#             st_value = self.loss_strl(predicted_img, img, mask=original_mask) * self.config.losses.structure.weight  #original_mask then those not inpaitning area also consider， normally for generate whole new image then use this
             total_loss = total_loss + st_value
             metrics['gen_st'] = st_value
 
@@ -160,6 +161,36 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
             rec_loss = self.loss_gr(predicted_img, img, discr_fake_pred) * self.config.losses.gan_reconstruction.weight
             total_loss = total_loss + rec_loss
             metrics['gen_rec'] = rec_loss
+
+        # HAD loss
+        if self.config.losses.HAD.weight > 0:
+            had_loss = self.loss_had(img, predicted_img, self.discriminator, original_mask, supervised_mask) * self.config.losses.HAD.weight
+            total_loss = total_loss + had_loss
+            metrics['gen_had'] = had_loss
+
+        #  contextual loss
+        if self.config.losses.contextual.weight > 0:
+            ctxt_loss = self.loss_ctxt(predicted_img, img, supervised_mask) * self.config.losses.contextual.weight
+            total_loss = total_loss + ctxt_loss
+            metrics['gen_ctxt'] = ctxt_loss
+
+        #  edges loss
+        if self.config.losses.edges.weight > 0:
+            edges_loss = self.loss_edges(predicted_img, img, supervised_mask) * self.config.losses.edges.weight
+            total_loss = total_loss + edges_loss
+            metrics['gen_edges'] = edges_loss
+
+        #  gradient different loss
+        if self.config.losses.gradient_different.weight > 0:
+            gd_loss = self.loss_gd(predicted_img, img, supervised_mask) * self.config.losses.gradient_different.weight
+            total_loss = total_loss + gd_loss
+            metrics['gen_gd'] = gd_loss
+
+        #  MSSSIM loss
+        if self.config.losses.MSSSIM.weight > 0:
+            msssim_loss = self.loss_msssim(img, predicted_img) * self.config.losses.MSSSIM.weight
+            total_loss = total_loss + msssim_loss
+            metrics['gen_msssim'] = msssim_loss
             
         ######################################################################################
             
