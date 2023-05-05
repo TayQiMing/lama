@@ -48,7 +48,7 @@ def main(config: OmegaConf):
         metrics_logger.log_hyperparams(config)
 
         training_model = make_training_model(config)
-        print("@@@@@ MAKE TRAINING MODEL HERE @@@@@")
+#         print("@@@@@ MAKE TRAINING MODEL HERE @@@@@")
 
         trainer_kwargs = OmegaConf.to_container(config.trainer.kwargs, resolve=True)
         if need_set_deterministic:
@@ -62,7 +62,7 @@ def main(config: OmegaConf):
             **trainer_kwargs
         )
         trainer.fit(training_model)
-        print("@@@@@ FIT TRAINING MODEL HERE @@@@@")
+#         print("@@@@@ FIT TRAINING MODEL HERE @@@@@")
     except KeyboardInterrupt:
         LOGGER.warning('Interrupted by user')
     except Exception as ex:
