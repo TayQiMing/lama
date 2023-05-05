@@ -46,7 +46,8 @@ class EdgeLoss(nn.Module):
         gray_img = torch.mean(img, dim=1, keepdim=True)
         
         # Convert the PyTorch tensor to a NumPy array
-        np_img = gray_img.cpu().numpy()[0, 0, :, :]
+#         np_img = gray_img.cpu().numpy()[0, 0, :, :]
+        np_img = gray_img.detach().cpu().numpy()[0, 0, :, :]
 
         # Compute the Canny edge map using OpenCV
         edges = cv2.Canny(np.uint8(255 * np_img), 100, 200) / 255.0
