@@ -3,7 +3,7 @@ import torch.nn.functional as F
 
 class TotalVariationLoss(torch.nn.Module):
     def __init__(self):
-        super(TVLoss, self).__init__()
+        super(TotalVariationLoss, self).__init__()
         self.conv_h = torch.nn.Conv2d(1, 1, kernel_size=(1, 2), stride=1, padding=0, bias=False)
         self.conv_v = torch.nn.Conv2d(1, 1, kernel_size=(2, 1), stride=1, padding=0, bias=False)
         self.conv_h.weight.data = torch.tensor([[[[1, -1]]]])
