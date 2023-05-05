@@ -14,7 +14,7 @@ class TotalVariationLoss(torch.nn.Module):
             param.requires_grad = False
 
     def forward(self, img):
-        device = predicted_img.device
+        device = img.device
         img = img.mean(dim=1, keepdim=True)
         img_h = self.conv_h(img.to(device))
         img_v = self.conv_v(img.to(device))
