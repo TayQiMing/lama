@@ -24,10 +24,8 @@ class DFCPLoss(nn.Module):
         
         # Compute the deep feature consistent perceptual loss
         dfcpl_loss = 0.0
-        print("@@@@@@@@@@@@ PRED FEATURES SIZE: ",pred_features.size())
         for pred_feature, target_feature in zip(pred_features, target_features):
             # Compute the Gram matrix of the predicted and target feature maps
-            print("@@@@@@@@@@@@ PRED FEATURE SIZE: ",pred_feature.size())
             pred_gram = self.calc_gram_matrix(pred_feature)
             target_gram = self.calc_gram_matrix(target_feature)
             
