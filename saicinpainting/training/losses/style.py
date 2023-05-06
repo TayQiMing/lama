@@ -25,7 +25,7 @@ class StyleLoss(torch.nn.Module):
         
         a = input.size(0)
         b = input.size(1)
-        spatial_dim = feature_map.dim() - 2
+        spatial_dim = input.dim() - 2
         c = input.size(-2)
         d = input.size(-1)
         
