@@ -192,6 +192,30 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
             total_loss = total_loss + msssim_loss
             metrics['gen_msssim'] = msssim_loss
             
+        #  AA loss
+        if self.config.losses.AA.weight > 0:
+            aa_loss = self.loss_aa(self.generator, self.discriminator,predicted_img, img, supervised_mask) * self.config.losses.AA.weight
+            total_loss = total_loss + aa_loss
+            metrics['gen_aa'] = aa_loss
+            
+        #  DFCP loss
+        if self.config.losses.DFCP.weight > 0:
+            dfcp_loss = self.loss_dfcp(predicted_img, img, supervised_mask) * self.config.losses.DFCP.weight
+            total_loss = total_loss + dfcp_loss
+            metrics['gen_dfcp'] = dfcp_loss
+            
+        #  PP loss
+        if self.config.losses.PP.weight > 0:
+            pp_loss = self.loss_pp(predicted_img, img, supervised_mask) * self.config.losses.PP.weight
+            total_loss = total_loss + pp_loss
+            metrics['gen_pp'] = pp_loss
+            
+        #  patchgan loss
+        if self.config.losses.patchgan.weight > 0:
+            patchgan_loss = self.loss_patchgan(discr_real_pred, discr_fake_pred) * self.config.losses.patchgan.weight
+            total_loss = total_loss + patchgan_loss
+            metrics['gen_patchgan'] = patchgan_loss
+            
         ######################################################################################
             
             
