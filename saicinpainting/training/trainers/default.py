@@ -158,7 +158,7 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
 
         # GAN based reconstruction loss
         if self.config.losses.gan_reconstruction.weight > 0:
-            rec_loss = self.loss_gr(predicted_img, img, discr_fake_pred) * self.config.losses.gan_reconstruction.weight
+            rec_loss = self.loss_gr(predicted_img, img, supervised_mask) * self.config.losses.gan_reconstruction.weight
             total_loss = total_loss + rec_loss
             metrics['gen_rec'] = rec_loss
 
