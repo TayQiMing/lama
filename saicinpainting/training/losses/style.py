@@ -112,12 +112,12 @@ class StyleLoss(torch.nn.Module):
         features = self.vgg(x)
         gram_matrices = []
         for f in features:
-            a = input.size(0)
-            b = input.size(1)
+            N = input.size(0)
+            C = input.size(1)
             spatial_dim = input.dim() - 2
-            c = input.size(-2)
-            d = input.size(-1)
-            N, C, H, W = f.size()
+            H = input.size(-2)
+            W = input.size(-1)
+#             N, C, H, W = f.size()
             f = F.normalize(f.view(N, C, -1), dim=2)
             gram_matrices.append(torch.bmm(f, f.transpose(1, 2)) / (C * H * W))
         return gram_matrices
