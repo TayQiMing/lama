@@ -22,6 +22,10 @@ from saicinpainting.training.losses.gradient_different import GradientDifference
 from saicinpainting.training.losses.edges import EdgeLoss
 from saicinpainting.training.losses.HAD import HADLoss
 from saicinpainting.training.losses.MSSSIM import MSSSIMLoss
+from saicinpainting.training.losses.AA import AttentionalAdversarialLoss
+from saicinpainting.training.losses.DFCP import DFCPLoss
+from saicinpainting.training.losses.PP import PerPixelLoss
+from saicinpainting.training.losses.patchgan import PatchGANLoss
 
 from saicinpainting.training.modules import make_generator, make_discriminator
 from saicinpainting.training.visualizers import make_visualizer
@@ -144,6 +148,18 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
                 
             if self.config.losses.MSSSIM.weight > 0:
                 self.loss_msssim = MSSSIMLoss()
+                
+            if self.config.losses.AA.weight > 0:
+                self.loss_aa = AttentionalAdversarialLoss()
+                
+            if self.config.losses.DFCP.weight > 0:
+                self.loss_dfcp = DFCPLoss()
+                
+            if self.config.losses.PP.weight > 0:
+                self.loss_pp = PerPixelLoss()
+                
+            if self.config.losses.patchgan.weight > 0:
+                self.loss_patchgan = PatchGANLoss()
 
             ############################################################
                 
