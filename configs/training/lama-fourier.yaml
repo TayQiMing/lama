@@ -37,6 +37,14 @@ losses:
     weight: 10
   MSSSIM:
     weight: 10
+  AA:
+    weight: 10
+  DFCP:
+    weight: 10
+  PP:
+    weight: 10
+  patchgan:
+    weight: 10
   resnet_pl:
     weight: 30
     weights_path: ${env:TORCH_HOME}
