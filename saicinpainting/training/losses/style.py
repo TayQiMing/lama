@@ -21,7 +21,14 @@ class StyleLoss(torch.nn.Module):
         return (x - self.mean_.to(x.device)) / self.std_.to(x.device)
             
     def gram_matrix(self, input):
-        a, b, c, d = input.size()  # a=batch size(=1)
+#         a, b, c, d = input.size()  # a=batch size(=1)
+        
+        a = feature_map.size(0)
+        b = feature_map.size(1)
+        spatial_dim = feature_map.dim() - 2
+        c = feature_map.size(-2)
+        d = feature_map.size(-1)
+        
         features = input.view(a * b, c * d)  # resise F_XL into \hat F_XL
         G = torch.mm(features, features.t())  # compute the gram product
         return G.div(a * b * c * d)
