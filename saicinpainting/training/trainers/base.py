@@ -26,6 +26,7 @@ from saicinpainting.training.losses.AA import AttentionalAdversarialLoss
 from saicinpainting.training.losses.DFCP import DFCPLoss
 from saicinpainting.training.losses.PP import PerPixelLoss
 from saicinpainting.training.losses.patchgan import PatchGANLoss
+from saicinpainting.training.losses.FCPL import FCPLLoss
 
 from saicinpainting.training.modules import make_generator, make_discriminator
 from saicinpainting.training.visualizers import make_visualizer
@@ -160,6 +161,9 @@ class BaseInpaintingTrainingModule(ptl.LightningModule):
                 
             if self.config.losses.patchgan.weight > 0:
                 self.loss_patchgan = PatchGANLoss()
+                
+            if self.config.losses.FCPL.weight > 0:
+                self.loss_fcpl = FCPLLoss()
 
             ############################################################
                 
