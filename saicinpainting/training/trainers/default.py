@@ -216,6 +216,12 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
             total_loss = total_loss + patchgan_loss
             metrics['gen_patchgan'] = patchgan_loss
             
+        #  FCPL loss
+        if self.config.losses.FCPL.weight > 0:
+            fcpl_loss = self.loss_fcpl(predicted_img, img, supervised_mask) * self.config.losses.FCPL.weight
+            total_loss = total_loss + fcpl_loss
+            metrics['gen_fcpl'] = fcpl_loss
+            
         ######################################################################################
             
             
