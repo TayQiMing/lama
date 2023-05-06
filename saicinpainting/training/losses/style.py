@@ -29,8 +29,10 @@ class StyleLoss(torch.nn.Module):
         c = input.size(-2)
         d = input.size(-1)
         
-        features = input.view(a * b, c * d)  # resise F_XL into \hat F_XL
-        G = torch.mm(features, features.t())  # compute the gram product
+#         features = input.view(a * b, c * d)  # resise F_XL into \hat F_XL
+        features = input.view(a, b, c*d) 
+#         G = torch.mm(features, features.t())  # compute the gram product
+        G = torch.bmm(features, features.transpose(1,2)) # compute the gram product
         return G.div(a * b * c * d)
 
     def forward(self, predicted_img, img, mask):
