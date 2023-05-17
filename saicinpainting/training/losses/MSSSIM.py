@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
 from torchvision.transforms.functional import resize
-from torchvision.models import vgg16
+from PIL import Image
 
 class MSSSIMLoss(torch.nn.Module):
     def __init__(self):
