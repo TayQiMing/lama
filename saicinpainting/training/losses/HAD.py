@@ -37,6 +37,7 @@
 
 import torch
 import torch.nn.functional as F
+import numpy as np
 
 class HADLoss(torch.nn.Module):
     def __init__(self):
@@ -44,6 +45,10 @@ class HADLoss(torch.nn.Module):
 
     def forward(self, feature_i, feature_g, img, predicted_img, discrim, ori_mask, supervised_mask):
         device = predicted_img.device
+        aaa = np.array(feature_i)
+        bbb = np.array(feature_g)
+        print(aaa.shape)
+        print("AND ", bbb.shape)
 
         # Convert the mask to a bool type
         ori_mask = ori_mask.bool()
