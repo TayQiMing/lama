@@ -48,13 +48,16 @@ class HADLoss(torch.nn.Module):
         self.mask = None
 
 
-    def forward(self, img, predicted_img,discrim, ori_mask, supervised_mask):
+    def forward(self,feature_i,feature_g, img, predicted_img,discrim, ori_mask, supervised_mask):
         device = predicted_img.device
         # Compute features for inpainted and ground truth images
-        _, feat_i = discrim(predicted_img)
-        _, feat_g = discrim(img)
-
+#         _, feat_i = discrim(predicted_img)
+#         _, feat_g = discrim(img)
+        feat_i = feature_i
+        feat_g = feature_g
+        
         # Convert the mask to a bool type
+        
         ori_mask = ori_mask.bool()
         supervised_mask = supervised_mask.bool()
         
