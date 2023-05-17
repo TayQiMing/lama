@@ -2,6 +2,7 @@ import torch
 import torch.nn.functional as F
 from torchvision.transforms.functional import resize
 from PIL import Image
+import torchvision
 
 class MSSSIMLoss(torch.nn.Module):
     def __init__(self):
