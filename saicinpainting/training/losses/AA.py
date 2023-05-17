@@ -30,7 +30,6 @@
 
 #         return total_loss
 
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -46,6 +45,9 @@ class AttentionalAdversarialLoss(nn.Module):
         for param in self.vgg.parameters():
             param.requires_grad = False
         
+        # Load pre-trained attention model
+        self.att_model = models.attention_model(pretrained=True).eval()
+        
         # Define the adversarial loss criterion
         self.criterion = nn.BCEWithLogitsLoss()
         
@@ -57,8 +59,8 @@ class AttentionalAdversarialLoss(nn.Module):
         fake_img = predicted_img * mask + real_img * (1 - mask)
         
         # Compute the attention maps for the real and fake images
-        real_atts = self.calc_attention_maps(real_img)
-        fake_atts = self.calc_attention_maps(fake_img)
+        real_atts = self.att_model(real_img)
+        fake_atts = self.att_model(fake_img)
         
         # Compute the feature maps for the real and fake images
         real_features = self.vgg(real_img)
@@ -75,17 +77,7 @@ class AttentionalAdversarialLoss(nn.Module):
         loss = adv_loss + 0.001 * att_loss
         
         return loss
-    
-    def calc_attention_maps(self, img):
-        # Compute the gradients of the image with respect to the pixel values
-        img_grads = torch.abs(torch.autograd.grad(outputs=img.sum(), inputs=img, create_graph=True)[0])
 
-        # Compute the attention maps
-        att_maps = torch.mean(img_grads, dim=1, keepdim=True)
-        att_maps = F.interpolate(att_maps, size=img.shape[2:], mode='bilinear', align_corners=False)
-        att_maps = F.normalize(att_maps, p=1, dim=2)
-
-        return att_maps
 
 
     
