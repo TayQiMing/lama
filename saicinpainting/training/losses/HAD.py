@@ -1,3 +1,33 @@
+import torch
+import torch.nn.functional as F
+
+class HADLoss(torch.nn.Module):
+    def __init__(self):
+        super(HADLoss, self).__init__()
+
+    def forward(self, img, predicted_img, ori_mask, supervised_mask):
+        device = predicted_img.device
+
+        # Convert the mask to a bool type
+        ori_mask = ori_mask.bool()
+        supervised_mask = supervised_mask.bool()
+
+        # Apply the mask to the images
+        masked_i = img * ori_mask
+        masked_g = predicted_img * ori_mask
+
+        # Apply the mask to the supervised region
+        masked_supervised = supervised_mask * ori_mask
+
+        # Compute HAD loss
+        dist_feat = F.pairwise_distance(masked_supervised.view(masked_supervised.size(0), -1),
+                                        masked_g.view(masked_g.size(0), -1), p=2)
+        dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
+        had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
+
+        return had_loss
+
+
 # import torch
 # import torch.nn as nn
 # import torch.nn.functional as F
