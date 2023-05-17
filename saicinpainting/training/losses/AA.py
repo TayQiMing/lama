@@ -13,7 +13,7 @@ class AttentionalAdversarialLoss(nn.Module):
 
         # Discriminate real and fake images
         real_preds = discriminator(target_image)
-        fake_preds = discriminator(fake_images)
+        fake_preds = discriminator(fake_images)[0]
 
         # Calculate adversarial loss
         adversarial_loss = -torch.mean(torch.log(fake_preds))
