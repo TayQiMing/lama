@@ -164,7 +164,8 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
 
         # HAD loss
         if self.config.losses.HAD.weight > 0:
-            had_loss = self.loss_had(discr_fake_features, discr_real_features,img, predicted_img, self.discriminator, original_mask, supervised_mask) * self.config.losses.HAD.weight
+            had_loss = self.loss_had(img, predicted_img, original_mask, supervised_mask) * self.config.losses.HAD.weight
+#             had_loss = self.loss_had(discr_fake_features, discr_real_features,img, predicted_img, self.discriminator, original_mask, supervised_mask) * self.config.losses.HAD.weight
             total_loss = total_loss + had_loss
             metrics['gen_had'] = had_loss
 
