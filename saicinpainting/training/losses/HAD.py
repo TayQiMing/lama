@@ -20,8 +20,10 @@ class HADLoss(torch.nn.Module):
         masked_supervised = supervised_mask * ori_mask
 
         # Compute HAD loss
-        masked_supervised_flat = masked_supervised.view(masked_supervised.size(0), -1)
-        masked_g_flat = masked_g.view(masked_g.size(0), -1)
+        masked_supervised_flat = masked_supervised.view(masked_supervised.size(0), -1).float()
+        masked_g_flat = masked_g.view(masked_g.size(0), -1).float()
+#         masked_supervised_flat = masked_supervised.view(masked_supervised.size(0), -1)
+#         masked_g_flat = masked_g.view(masked_g.size(0), -1)
 
         dist_feat = torch.norm(masked_supervised_flat - masked_g_flat, dim=1, p=2)
         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
