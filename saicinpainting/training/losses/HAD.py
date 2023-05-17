@@ -18,9 +18,10 @@ class HADLoss(torch.nn.Module):
 
         # Apply the mask to the supervised region
         masked_supervised = supervised_mask * ori_mask
+        masked_g_resized = F.interpolate(masked_g, size=masked_supervised.size()[2:], mode='bilinear', align_corners=False)
 
         # Compute HAD loss
-        dist_feat = torch.sqrt(torch.sum(torch.pow(masked_supervised - masked_g, 2), dim=1))
+        dist_feat = torch.sqrt(torch.sum(torch.pow(masked_supervised - masked_g_resized, 2), dim=1))
         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
 
