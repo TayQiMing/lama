@@ -15,9 +15,9 @@ class HADLoss(torch.nn.Module):
     def forward(self, img, predicted_img, ori_mask, supervised_mask):
         device = predicted_img.device
 
-        # Convert the mask to a bool type
-        ori_mask = ori_mask.bool()
-        supervised_mask = supervised_mask.bool()
+        # Convert the mask to a float type
+        ori_mask = ori_mask.float()
+        supervised_mask = supervised_mask.float()
 
         # Apply the mask to the images
         masked_i = img * ori_mask
@@ -25,6 +25,8 @@ class HADLoss(torch.nn.Module):
 
         # Apply the mask to the supervised region
         masked_supervised = supervised_mask * ori_mask
+
+        # Expand masked_supervised to match the number of channels expected by the model
         masked_supervised = masked_supervised.expand(-1, 3, -1, -1)
 
         # Resize the masked_g tensor to have the same size as masked_supervised
@@ -40,6 +42,7 @@ class HADLoss(torch.nn.Module):
         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
 
         return had_loss
+
 
 
 
