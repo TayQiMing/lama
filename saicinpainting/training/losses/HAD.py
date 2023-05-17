@@ -1,9 +1,16 @@
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
+from torchvision.models import vgg16
 
 class HADLoss(torch.nn.Module):
     def __init__(self):
         super(HADLoss, self).__init__()
+
+        # Load pre-trained VGG-16 model
+        self.model = vgg16(pretrained=True).features.eval()
+        for param in self.model.parameters():
+            param.requires_grad = False
 
     def forward(self, img, predicted_img, ori_mask, supervised_mask):
         device = predicted_img.device
@@ -18,10 +25,16 @@ class HADLoss(torch.nn.Module):
 
         # Apply the mask to the supervised region
         masked_supervised = supervised_mask * ori_mask
+
+        # Resize the masked_g tensor to have the same size as masked_supervised
         masked_g_resized = F.interpolate(masked_g, size=masked_supervised.size()[2:], mode='bilinear', align_corners=False)
 
+        # Compute feature maps
+        feat_supervised = self.model(masked_supervised)
+        feat_g = self.model(masked_g_resized)
+
         # Compute HAD loss
-        dist_feat = torch.sqrt(torch.sum(torch.pow(masked_supervised - masked_g_resized, 2), dim=1))
+        dist_feat = torch.sqrt(torch.sum(torch.pow(feat_supervised - feat_g, 2), dim=1))
         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
 
