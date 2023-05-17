@@ -35,6 +35,55 @@
 
 
 
+
+
+
+# import torch
+# import torch.nn.functional as F
+# import numpy as np
+
+# class HADLoss(torch.nn.Module):
+#     def __init__(self):
+#         super(HADLoss, self).__init__()
+
+#     def forward(self, feature_i, feature_g, img, predicted_img, discrim, ori_mask, supervised_mask):
+#         device = predicted_img.device
+# #         aaa = np.array(feature_i)
+# #         bbb = np.array(feature_g)
+# #         print(aaa.shape)
+# #         print("AND ", bbb.shape)
+
+#         # Convert the mask to a bool type
+#         ori_mask = ori_mask.bool()
+#         supervised_mask = supervised_mask.bool()
+
+#         # Apply the mask to the images
+#         masked_i = img * ori_mask
+#         masked_g = predicted_img * ori_mask
+
+# #         # Apply the mask to the features
+# #         masked_feat_i = []
+# #         masked_feat_g = []
+# #         for feat_i, feat_g in zip(feature_i, feature_g):
+# #             masked_feat_i.append(feat_i * supervised_mask)
+# #             masked_feat_g.append(feat_g * supervised_mask)
+
+#         # Stack the masked features tensors along the channel dimension
+#         masked_feat_i = torch.stack(feature_i, dim=1)
+#         masked_feat_g = torch.stack(feature_g, dim=1)
+        
+#         # Apply the mask to the features
+#         masked_feat_i = masked_feat_i * supervised_mask.unsqueeze(2).unsqueeze(3)
+#         masked_feat_g = masked_feat_g * supervised_mask.unsqueeze(2).unsqueeze(3)
+
+
+#         # Compute HAD loss
+#         dist_feat = F.pairwise_distance(masked_feat_i, masked_feat_g, p=2)
+#         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
+#         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
+
+#         return had_loss
+
 import torch
 import torch.nn.functional as F
 import numpy as np
@@ -45,10 +94,6 @@ class HADLoss(torch.nn.Module):
 
     def forward(self, feature_i, feature_g, img, predicted_img, discrim, ori_mask, supervised_mask):
         device = predicted_img.device
-#         aaa = np.array(feature_i)
-#         bbb = np.array(feature_g)
-#         print(aaa.shape)
-#         print("AND ", bbb.shape)
 
         # Convert the mask to a bool type
         ori_mask = ori_mask.bool()
@@ -58,21 +103,25 @@ class HADLoss(torch.nn.Module):
         masked_i = img * ori_mask
         masked_g = predicted_img * ori_mask
 
-#         # Apply the mask to the features
-#         masked_feat_i = []
-#         masked_feat_g = []
-#         for feat_i, feat_g in zip(feature_i, feature_g):
-#             masked_feat_i.append(feat_i * supervised_mask)
-#             masked_feat_g.append(feat_g * supervised_mask)
+        # Resize the feature tensors to have the same size
+        size_i = feature_i[0].size()[-2:]  # Get the spatial size of feature_i
+        size_g = feature_g[0].size()[-2:]  # Get the spatial size of feature_g
+
+        feature_i_resized = []
+        feature_g_resized = []
+        for feat_i, feat_g in zip(feature_i, feature_g):
+            feat_i_resized = F.interpolate(feat_i, size=size_i, mode='bilinear', align_corners=False)
+            feat_g_resized = F.interpolate(feat_g, size=size_g, mode='bilinear', align_corners=False)
+            feature_i_resized.append(feat_i_resized)
+            feature_g_resized.append(feat_g_resized)
 
         # Stack the masked features tensors along the channel dimension
-        masked_feat_i = torch.stack(feature_i, dim=1)
-        masked_feat_g = torch.stack(feature_g, dim=1)
+        masked_feat_i = torch.stack(feature_i_resized, dim=1)
+        masked_feat_g = torch.stack(feature_g_resized, dim=1)
         
         # Apply the mask to the features
         masked_feat_i = masked_feat_i * supervised_mask.unsqueeze(2).unsqueeze(3)
         masked_feat_g = masked_feat_g * supervised_mask.unsqueeze(2).unsqueeze(3)
-
 
         # Compute HAD loss
         dist_feat = F.pairwise_distance(masked_feat_i, masked_feat_g, p=2)
@@ -80,7 +129,6 @@ class HADLoss(torch.nn.Module):
         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
 
         return had_loss
-
 
 
 # import torch
