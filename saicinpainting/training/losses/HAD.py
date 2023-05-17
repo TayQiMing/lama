@@ -45,10 +45,10 @@ class HADLoss(torch.nn.Module):
 
     def forward(self, feature_i, feature_g, img, predicted_img, discrim, ori_mask, supervised_mask):
         device = predicted_img.device
-        aaa = np.array(feature_i)
-        bbb = np.array(feature_g)
-        print(aaa.shape)
-        print("AND ", bbb.shape)
+#         aaa = np.array(feature_i)
+#         bbb = np.array(feature_g)
+#         print(aaa.shape)
+#         print("AND ", bbb.shape)
 
         # Convert the mask to a bool type
         ori_mask = ori_mask.bool()
@@ -58,16 +58,21 @@ class HADLoss(torch.nn.Module):
         masked_i = img * ori_mask
         masked_g = predicted_img * ori_mask
 
-        # Apply the mask to the features
-        masked_feat_i = []
-        masked_feat_g = []
-        for feat_i, feat_g in zip(feature_i, feature_g):
-            masked_feat_i.append(feat_i * supervised_mask)
-            masked_feat_g.append(feat_g * supervised_mask)
+#         # Apply the mask to the features
+#         masked_feat_i = []
+#         masked_feat_g = []
+#         for feat_i, feat_g in zip(feature_i, feature_g):
+#             masked_feat_i.append(feat_i * supervised_mask)
+#             masked_feat_g.append(feat_g * supervised_mask)
 
         # Stack the masked features tensors along the channel dimension
-        masked_feat_i = torch.stack(masked_feat_i, dim=1)
-        masked_feat_g = torch.stack(masked_feat_g, dim=1)
+        masked_feat_i = torch.stack(feature_i, dim=1)
+        masked_feat_g = torch.stack(feature_g, dim=1)
+        
+        # Apply the mask to the features
+        masked_feat_i = masked_feat_i * supervised_mask.unsqueeze(2).unsqueeze(3)
+        masked_feat_g = masked_feat_g * supervised_mask.unsqueeze(2).unsqueeze(3)
+
 
         # Compute HAD loss
         dist_feat = F.pairwise_distance(masked_feat_i, masked_feat_g, p=2)
