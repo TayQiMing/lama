@@ -30,6 +30,55 @@
 
 #         return total_loss
 
+# import torch
+# import torch.nn as nn
+# import torch.nn.functional as F
+# from torchvision import models
+
+
+# class AttentionalAdversarialLoss(nn.Module):
+#     def __init__(self):
+#         super(AttentionalAdversarialLoss, self).__init__()
+        
+#         # Load VGG19 model to extract feature maps
+#         self.vgg = models.vgg19(pretrained=True).features.eval()
+#         for param in self.vgg.parameters():
+#             param.requires_grad = False
+        
+#         # Load pre-trained attention model
+#         self.att_model = models.resnet_salicon(pretrained=True).eval()
+        
+#         # Define the adversarial loss criterion
+#         self.criterion = nn.BCEWithLogitsLoss()
+        
+        
+#     def forward(self, generator, discriminator, predicted_img, real_img, mask):
+#         device = predicted_img.device
+        
+#         # Generate a fake image by filling in the masked region of the real image
+#         fake_img = predicted_img * mask + real_img * (1 - mask)
+        
+#         # Compute the attention maps for the real and fake images
+#         real_atts = self.att_model(real_img)
+#         fake_atts = self.att_model(fake_img)
+        
+#         # Compute the feature maps for the real and fake images
+#         real_features = self.vgg(real_img)
+#         fake_features = self.vgg(fake_img)
+        
+#         # Compute the adversarial loss for the fake image
+#         fake_preds = discriminator(fake_img)
+#         adv_loss = self.criterion(fake_preds, torch.ones_like(fake_preds).to(device))
+        
+#         # Compute the attentional loss
+#         att_loss = F.l1_loss(real_atts * fake_features, fake_atts * real_features)
+        
+#         # Combine the adversarial and attentional losses using a weight factor of 0.001
+#         loss = adv_loss + 0.001 * att_loss
+        
+#         return loss
+
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
@@ -45,12 +94,11 @@ class AttentionalAdversarialLoss(nn.Module):
         for param in self.vgg.parameters():
             param.requires_grad = False
         
-        # Load pre-trained attention model
-        self.att_model = models.resnet_salicon(pretrained=True).eval()
-        
         # Define the adversarial loss criterion
         self.criterion = nn.BCEWithLogitsLoss()
         
+        # Attention mechanism
+        self.att_conv = nn.Conv2d(in_channels=3, out_channels=1, kernel_size=1)
         
     def forward(self, generator, discriminator, predicted_img, real_img, mask):
         device = predicted_img.device
@@ -59,8 +107,8 @@ class AttentionalAdversarialLoss(nn.Module):
         fake_img = predicted_img * mask + real_img * (1 - mask)
         
         # Compute the attention maps for the real and fake images
-        real_atts = self.att_model(real_img)
-        fake_atts = self.att_model(fake_img)
+        real_atts = self.calc_attention_maps(real_img)
+        fake_atts = self.calc_attention_maps(fake_img)
         
         # Compute the feature maps for the real and fake images
         real_features = self.vgg(real_img)
@@ -77,8 +125,12 @@ class AttentionalAdversarialLoss(nn.Module):
         loss = adv_loss + 0.001 * att_loss
         
         return loss
-
-
+    
+    def calc_attention_maps(self, img):
+        att_maps = self.att_conv(img)
+        att_maps = torch.sigmoid(att_maps)
+        
+        return att_maps
 
     
     
