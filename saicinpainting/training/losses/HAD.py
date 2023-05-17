@@ -50,32 +50,48 @@ class HADLoss(torch.nn.Module):
 
     def forward(self,feature_i,feature_g, img, predicted_img,discrim, ori_mask, supervised_mask):
         device = predicted_img.device
-        print(len(feature_i[0][0][0]),len(feature_i[0][0][0][0]),len(feature_i[0][0][0][0]))
-        print("AND " , len(feature_i[1][0][0]),len(feature_i[1][0][0][0]),len(feature_i[1][0][0][0]))
-        print("ALSO ",len(feature_i[0][0][0][0]),len(feature_i[1][0][0][0]))
-        # Compute features for inpainted and ground truth images
-#         _, feat_i = discrim(predicted_img)
-#         _, feat_g = discrim(img)
-#         feat_i = torch.stack(feature_i)
-        feat_i = torch.nn.functional.interpolate(feature_i, size=(feature_g.size(2), feature_g.size(3)), mode='bilinear', align_corners=False)
-        feat_g = torch.stack(feature_g)
+# #         print(len(feature_i[0][0][0]),len(feature_i[0][0][0][0]),len(feature_i[0][0][0][0]))
+# #         print("AND " , len(feature_i[1][0][0]),len(feature_i[1][0][0][0]),len(feature_i[1][0][0][0]))
+# #         print("ALSO ",len(feature_i[0][0][0][0]),len(feature_i[1][0][0][0]))
+#         # Compute features for inpainted and ground truth images
+# #         _, feat_i = discrim(predicted_img)
+# #         _, feat_g = discrim(img)
+# #         feat_i = torch.stack(feature_i)
+#         feat_i = torch.nn.functional.interpolate(feature_i, size=(feature_g.size(2), feature_g.size(3)), mode='bilinear', align_corners=False)
+#         feat_g = torch.stack(feature_g)
+        
+        
+        
         
         # Convert the mask to a bool type
         
         ori_mask = ori_mask.bool()
         supervised_mask = supervised_mask.bool()
         
+        
+        masked_feat_i = []
+        masked_feat_g = []
+        for feat_i, feat_g in zip(feature_i, feature_g):
+            masked_feat_i.append(feat_i.masked_select(supervised_mask.view(supervised_mask.size(0), supervised_mask.size(1), 1, 1)))
+            masked_feat_g.append(feat_g.masked_select(supervised_mask.view(supervised_mask.size(0), supervised_mask.size(1), 1, 1)))
+
+        # Convert the masked features lists to tensors
+        masked_feat_i = torch.cat(masked_feat_i)
+        masked_feat_g = torch.cat(masked_feat_g)
+        
+        
+        
         # Compute masked regions
         masked_i = predicted_img.masked_select(ori_mask)
         masked_g = img.masked_select(ori_mask)
         
-#         if not isinstance(supervised_mask, torch.Tensor):
-#             supervised_mask = torch.tensor(supervised_mask).to(device)
+# #         if not isinstance(supervised_mask, torch.Tensor):
+# #             supervised_mask = torch.tensor(supervised_mask).to(device)
             
-#         masked_feat_i = feat_i.masked_select(supervised_mask)
-#         masked_feat_g = feat_g.masked_select(supervised_mask)
-        masked_feat_i = feat_i.masked_select(supervised_mask.view(supervised_mask.size(0), supervised_mask.size(1), 1, 1)) # if cannot then see the shape of
-        masked_feat_g = feat_g.masked_select(supervised_mask.view(supervised_mask.size(0), supervised_mask.size(1), 1, 1)) # feat_i and spv_mask, or channel
+# #         masked_feat_i = feat_i.masked_select(supervised_mask)
+# #         masked_feat_g = feat_g.masked_select(supervised_mask)
+#         masked_feat_i = feat_i.masked_select(supervised_mask.view(supervised_mask.size(0), supervised_mask.size(1), 1, 1)) # if cannot then see the shape of
+#         masked_feat_g = feat_g.masked_select(supervised_mask.view(supervised_mask.size(0), supervised_mask.size(1), 1, 1)) # feat_i and spv_mask, or channel
 
         # Compute HAD loss
         dist_feat = F.pairwise_distance(masked_feat_i, masked_feat_g, p=2)
