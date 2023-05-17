@@ -46,7 +46,7 @@ class AttentionalAdversarialLoss(nn.Module):
             param.requires_grad = False
         
         # Load pre-trained attention model
-        self.att_model = models.attention_model(pretrained=True).eval()
+        self.att_model = models.resnet_salicon(pretrained=True).eval()
         
         # Define the adversarial loss criterion
         self.criterion = nn.BCEWithLogitsLoss()
