@@ -115,65 +115,65 @@ class HADLoss(torch.nn.Module):
 #         return had_loss
 
 
-import torch
-import torch.nn.functional as F
-import numpy as np
+# import torch
+# import torch.nn.functional as F
+# import numpy as np
 
-class HADLoss(torch.nn.Module):
-    def __init__(self):
-        super(HADLoss, self).__init__()
+# class HADLoss(torch.nn.Module):
+#     def __init__(self):
+#         super(HADLoss, self).__init__()
 
-    def forward(self, feature_i, feature_g, img, predicted_img, discrim, ori_mask, supervised_mask):
-        device = predicted_img.device
+#     def forward(self, feature_i, feature_g, img, predicted_img, discrim, ori_mask, supervised_mask):
+#         device = predicted_img.device
 
-        # Convert the mask to a bool type
-        ori_mask = ori_mask.bool()
-        supervised_mask = supervised_mask.bool()
+#         # Convert the mask to a bool type
+#         ori_mask = ori_mask.bool()
+#         supervised_mask = supervised_mask.bool()
 
-        # Apply the mask to the images
-        masked_i = img * ori_mask
-        masked_g = predicted_img * ori_mask
+#         # Apply the mask to the images
+#         masked_i = img * ori_mask
+#         masked_g = predicted_img * ori_mask
 
-        # Resize the feature tensors to have the same number of channels
-        num_channels_i = feature_i[0].size(1)  # Get the number of channels in feature_i
-        num_channels_g = feature_g[0].size(1)  # Get the number of channels in feature_g
+#         # Resize the feature tensors to have the same number of channels
+#         num_channels_i = feature_i[0].size(1)  # Get the number of channels in feature_i
+#         num_channels_g = feature_g[0].size(1)  # Get the number of channels in feature_g
 
-        feature_i_resized = []
-        feature_g_resized = []
-        for feat_i, feat_g in zip(feature_i, feature_g):
-            if feat_i.size(1) != num_channels_i:
-                feat_i = self.resize_channels(feat_i, num_channels_i)
-            if feat_g.size(1) != num_channels_g:
-                feat_g = self.resize_channels(feat_g, num_channels_g)
-            feature_i_resized.append(feat_i)
-            feature_g_resized.append(feat_g)
+#         feature_i_resized = []
+#         feature_g_resized = []
+#         for feat_i, feat_g in zip(feature_i, feature_g):
+#             if feat_i.size(1) != num_channels_i:
+#                 feat_i = self.resize_channels(feat_i, num_channels_i)
+#             if feat_g.size(1) != num_channels_g:
+#                 feat_g = self.resize_channels(feat_g, num_channels_g)
+#             feature_i_resized.append(feat_i)
+#             feature_g_resized.append(feat_g)
 
-        # Stack the masked features tensors along the channel dimension
-        masked_feat_i = torch.stack(feature_i_resized, dim=1)
-        masked_feat_g = torch.stack(feature_g_resized, dim=1)
+#         # Stack the masked features tensors along the channel dimension
+#         masked_feat_i = torch.stack(feature_i_resized, dim=1)
+#         masked_feat_g = torch.stack(feature_g_resized, dim=1)
 
-        # Apply the mask to the features
-        masked_feat_i = masked_feat_i * supervised_mask.unsqueeze(2).unsqueeze(3)
-        masked_feat_g = masked_feat_g * supervised_mask.unsqueeze(2).unsqueeze(3)
+#         # Apply the mask to the features
+#         masked_feat_i = masked_feat_i * supervised_mask.unsqueeze(2).unsqueeze(3)
+#         masked_feat_g = masked_feat_g * supervised_mask.unsqueeze(2).unsqueeze(3)
 
-        # Compute HAD loss
-        dist_feat = F.pairwise_distance(masked_feat_i, masked_feat_g, p=2)
-        dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
-        had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
+#         # Compute HAD loss
+#         dist_feat = F.pairwise_distance(masked_feat_i, masked_feat_g, p=2)
+#         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
+#         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
 
-        return had_loss
+#         return had_loss
 
-    def resize_channels(self, tensor, num_channels):
-        # Resize the tensor to have the specified number of channels
-        num_current_channels = tensor.size(1)
-        if num_current_channels == num_channels:
-            return tensor
-        elif num_current_channels > num_channels:
-            return tensor[:, :num_channels]
-        else:
-            pad_channels = num_channels - num_current_channels
-            padding = torch.zeros((tensor.size(0), pad_channels, *tensor.shape[2:]), device=tensor.device)
-            return torch.cat([tensor, padding], dim=1)
+#     def resize_channels(self, tensor, num_channels):
+#         # Resize the tensor to have the specified number of channels
+#         num_current_channels = tensor.size(1)
+#         if num_current_channels == num_channels:
+#             return tensor
+#         elif num_current_channels > num_channels:
+#             return tensor[:, :num_channels]
+#         else:
+#             pad_channels = num_channels - num_current_channels
+#             padding = torch.zeros((tensor.size(0), pad_channels, *tensor.shape[2:]), device=tensor.device)
+#             return torch.cat([tensor, padding], dim=1)
 
 
 # this just 64 and 128 diff
