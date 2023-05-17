@@ -116,7 +116,7 @@ class AttentionalAdversarialLoss(nn.Module):
         
         # Compute the adversarial loss for the fake image
         fake_preds = discriminator(fake_img)
-        adv_loss = self.criterion(fake_preds, torch.ones_like(fake_preds).to(device))
+        adv_loss = self.criterion(fake_preds, torch.ones_like(fake_preds[0]).to(device))
         
         # Compute the attentional loss
         att_loss = F.l1_loss(real_atts * fake_features, fake_atts * real_features)
