@@ -3,6 +3,7 @@ import torch.nn.functional as F
 from torchvision.transforms.functional import resize
 from PIL import Image
 import torchvision
+from pytorch_ssim import ssim
 
 class MSSSIMLoss(torch.nn.Module):
     def __init__(self):
@@ -13,7 +14,7 @@ class MSSSIMLoss(torch.nn.Module):
         img1 = resize(img1, size=img2.size()[2:], interpolation=Image.BILINEAR)
 
         # Calculate the MS-SSIM loss using torchvision's implementation
-        ms_ssim_loss = 1 - torch.mean(torchvision.metrics.ssim(img1, img2, data_range=1, size_average=True, win_size=11, win_sigma=1.5, K=(0.01, 0.03)))
+        ms_ssim_loss = 1 - ssim(img1, img2)
 
         return ms_ssim_loss
 
