@@ -1,22 +1,25 @@
 import torch
 import torch.nn.functional as F
 from torchvision.transforms.functional import resize
+from torchvision.models import vgg16
 from PIL import Image
 
 class MSSSIMLoss(torch.nn.Module):
     def __init__(self):
         super(MSSSIMLoss, self).__init__()
-
+        # Load pre-trained VGG-16 model
+        self.model = vgg16(pretrained=True).features.eval()
+        for param in self.model.parameters():
+            param.requires_grad = False
+            
+            
     def forward(self, img1, img2):
         # Resize the images to the same size
         img1 = resize(img1, size=img2.size()[2:], interpolation=Image.BILINEAR)
 
         # Calculate the feature maps using a pre-trained VGG16 model
-        vgg = vgg16(pretrained=True).features.eval()
-        for param in vgg.parameters():
-            param.requires_grad = False
-        feat1 = vgg(img1)
-        feat2 = vgg(img2)
+        feat1 = self.model(img1)
+        feat2 = self.model(img2)
 
         # Calculate the MS-SSIM loss
         ms_ssim_loss = 1 - torch.mean(F.cosine_similarity(feat1, feat2, dim=1))
