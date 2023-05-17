@@ -53,8 +53,8 @@ class HADLoss(torch.nn.Module):
         # Compute features for inpainted and ground truth images
 #         _, feat_i = discrim(predicted_img)
 #         _, feat_g = discrim(img)
-        feat_i = feature_i
-        feat_g = feature_g
+        feat_i = torch.stack(feature_i)
+        feat_g = torch.stack(feature_g)
         
         # Convert the mask to a bool type
         
