@@ -1,3 +1,44 @@
+# import torch
+# import torch.nn as nn
+# import torch.nn.functional as F
+
+# class HoleAdvantageousDiscriminativeLoss(nn.Module):
+#     def __init__(self):
+#         super(HoleAdvantageousDiscriminativeLoss, self).__init__()
+        
+
+#     def forward(self, discriminator, generator_output, target_image, mask):
+#         # Generate inpainted images
+#         inpainted_images = generator_output
+
+#         # Discriminate real and inpainted images
+#         real_preds = discriminator(target_image)
+#         inpainted_preds = discriminator(inpainted_images)[0]
+
+#         # Calculate adversarial loss
+#         adversarial_loss = -torch.mean(torch.log(inpainted_preds))
+
+#         # Calculate discriminative loss
+#         discriminative_loss = F.mse_loss(inpainted_preds, real_preds)
+
+#         # Apply mask to focus on the inpainted regions
+#         masked_inpainted_images = inpainted_images * mask
+#         masked_target_image = target_image * mask
+
+#         # Calculate advantageous loss
+#         advantageous_loss = F.l1_loss(masked_inpainted_images, masked_target_image)
+
+#         # Calculate the total loss
+#         total_loss = adversarial_loss + discriminative_loss + advantageous_loss
+
+#         return total_loss
+
+
+
+
+
+
+
 import torch
 import torch.nn.functional as F
 
