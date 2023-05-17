@@ -194,7 +194,8 @@ class DefaultInpaintingTrainingModule(BaseInpaintingTrainingModule):
             
         #  AA loss
         if self.config.losses.AA.weight > 0:
-            aa_loss = self.loss_aa(self.generator, self.discriminator,predicted_img, img, supervised_mask) * self.config.losses.AA.weight
+            aa_loss = self.loss_aa(self.discriminator,predicted_img, img, supervised_mask) * self.config.losses.AA.weight
+#             aa_loss = self.loss_aa(self.generator, self.discriminator,predicted_img, img, supervised_mask) * self.config.losses.AA.weight
             total_loss = total_loss + aa_loss
             metrics['gen_aa'] = aa_loss
             
