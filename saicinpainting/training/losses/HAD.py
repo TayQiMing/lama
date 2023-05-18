@@ -17,6 +17,8 @@ class HADLoss(torch.nn.Module):
         # Apply the mask to the images
         masked_i = img * ori_mask
         masked_g = predicted_img * ori_mask
+        
+        print("masked_g:", masked_g)
 
         # Resize the masked_g tensor to have the same size as masked_i
         masked_g_resized = F.interpolate(masked_g, size=masked_i.size()[2:], mode='bilinear', align_corners=False)
