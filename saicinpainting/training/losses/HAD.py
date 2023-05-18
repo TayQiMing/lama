@@ -40,6 +40,7 @@ class HADLoss(torch.nn.Module):
         dist_feat = torch.sqrt(torch.sum(torch.pow(feat_supervised - feat_g, 2), dim=1))
         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
+        print("THE HAD LOSS IS ------ ",had_loss, " ------")
 
         return had_loss
 
