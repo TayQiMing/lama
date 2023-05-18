@@ -1,5 +1,4 @@
 import torch
-import torch.nn as nn
 import torch.nn.functional as F
 from torchvision.models import vgg16
 
@@ -15,46 +14,82 @@ class HADLoss(torch.nn.Module):
     def forward(self, img, predicted_img, ori_mask, supervised_mask):
         device = predicted_img.device
 
-        # Convert the mask to a float type
-        ori_mask = ori_mask.float()
-        supervised_mask = supervised_mask.float()
-
-        print("predicted_img:", predicted_img.shape,predicted_img)
-        print("ori_mask:", ori_mask.shape,ori_mask)
-        
         # Apply the mask to the images
         masked_i = img * ori_mask
         masked_g = predicted_img * ori_mask
 
-        # Apply the mask to the supervised region
-        masked_supervised = supervised_mask * ori_mask
+        # Resize the masked_g tensor to have the same size as masked_i
+        masked_g_resized = F.interpolate(masked_g, size=masked_i.size()[2:], mode='bilinear', align_corners=False)
 
-        # Expand masked_supervised to match the number of channels expected by the model
-        masked_supervised = masked_supervised.expand(-1, 3, -1, -1)
-
-        # Resize the masked_g tensor to have the same size as masked_supervised
-        masked_g_resized = F.interpolate(masked_g, size=masked_supervised.size()[2:], mode='bilinear', align_corners=False)
-
-        print("masked_i:", masked_i)
-        print("masked_g:", masked_g)
-        print("masked_supervised:", masked_supervised)
-        print("masked_g_resized:", masked_g_resized)
-        
         # Compute feature maps
-        feat_supervised = self.model(masked_supervised)
+        feat_i = self.model(masked_i)
         feat_g = self.model(masked_g_resized)
 
-        print("feat_supervised:", feat_supervised)
-        print("feat_g:", feat_g)
-        
-        
         # Compute HAD loss
-        dist_feat = torch.sqrt(torch.sum(torch.pow(feat_supervised - feat_g, 2), dim=1))
+        dist_feat = torch.sqrt(torch.sum(torch.pow(feat_i - feat_g, 2), dim=1))
         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
-        print("THE HAD LOSS IS ------ ",had_loss, " ------")
 
         return had_loss
+
+
+# import torch
+# import torch.nn as nn
+# import torch.nn.functional as F
+# from torchvision.models import vgg16
+
+# class HADLoss(torch.nn.Module):
+#     def __init__(self):
+#         super(HADLoss, self).__init__()
+
+#         # Load pre-trained VGG-16 model
+#         self.model = vgg16(pretrained=True).features.eval()
+#         for param in self.model.parameters():
+#             param.requires_grad = False
+
+#     def forward(self, img, predicted_img, ori_mask, supervised_mask):
+#         device = predicted_img.device
+
+#         # Convert the mask to a float type
+#         ori_mask = ori_mask.float()
+#         supervised_mask = supervised_mask.float()
+
+#         print("predicted_img:", predicted_img.shape,predicted_img)
+#         print("ori_mask:", ori_mask.shape,ori_mask)
+        
+#         # Apply the mask to the images
+#         masked_i = img * ori_mask
+#         masked_g = predicted_img * ori_mask
+
+#         # Apply the mask to the supervised region
+#         masked_supervised = supervised_mask * ori_mask
+
+#         # Expand masked_supervised to match the number of channels expected by the model
+#         masked_supervised = masked_supervised.expand(-1, 3, -1, -1)
+
+#         # Resize the masked_g tensor to have the same size as masked_supervised
+#         masked_g_resized = F.interpolate(masked_g, size=masked_supervised.size()[2:], mode='bilinear', align_corners=False)
+
+#         print("masked_i:", masked_i)
+#         print("masked_g:", masked_g)
+#         print("masked_supervised:", masked_supervised)
+#         print("masked_g_resized:", masked_g_resized)
+        
+#         # Compute feature maps
+#         feat_supervised = self.model(masked_supervised)
+#         feat_g = self.model(masked_g_resized)
+
+#         print("feat_supervised:", feat_supervised)
+#         print("feat_g:", feat_g)
+        
+        
+#         # Compute HAD loss
+#         dist_feat = torch.sqrt(torch.sum(torch.pow(feat_supervised - feat_g, 2), dim=1))
+#         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
+#         had_loss = torch.mean(dist_feat) - torch.mean(dist_pixel)
+#         print("THE HAD LOSS IS ------ ",had_loss, " ------")
+
+#         return had_loss
 
 
 
