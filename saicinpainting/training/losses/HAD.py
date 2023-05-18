@@ -32,10 +32,19 @@ class HADLoss(torch.nn.Module):
         # Resize the masked_g tensor to have the same size as masked_supervised
         masked_g_resized = F.interpolate(masked_g, size=masked_supervised.size()[2:], mode='bilinear', align_corners=False)
 
+        print("masked_i:", masked_i)
+        print("masked_g:", masked_g)
+        print("masked_supervised:", masked_supervised)
+        print("masked_g_resized:", masked_g_resized)
+        
         # Compute feature maps
         feat_supervised = self.model(masked_supervised)
         feat_g = self.model(masked_g_resized)
 
+        print("feat_supervised:", feat_supervised)
+        print("feat_g:", feat_g)
+        
+        
         # Compute HAD loss
         dist_feat = torch.sqrt(torch.sum(torch.pow(feat_supervised - feat_g, 2), dim=1))
         dist_pixel = torch.mean(torch.abs(masked_i - masked_g))
