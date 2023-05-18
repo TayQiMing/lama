@@ -19,6 +19,9 @@ class HADLoss(torch.nn.Module):
         ori_mask = ori_mask.float()
         supervised_mask = supervised_mask.float()
 
+        print("predicted_img:", predicted_img.shape,predicted_img)
+        print("ori_mask:", ori_mask.shape,ori_mask)
+        
         # Apply the mask to the images
         masked_i = img * ori_mask
         masked_g = predicted_img * ori_mask
