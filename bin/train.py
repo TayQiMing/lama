@@ -61,6 +61,7 @@ def main(config: OmegaConf):
             default_root_dir=os.getcwd(),
             **trainer_kwargs
         )
+        print("######## MY TRAINER INFO ########",trainer)
         trainer.fit(training_model)
 #         print("@@@@@ FIT TRAINING MODEL HERE @@@@@")
     except KeyboardInterrupt:
