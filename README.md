@@ -3,6 +3,64 @@
 by Roman Suvorov, Elizaveta Logacheva, Anton Mashikhin, 
 Anastasia Remizova, Arsenii Ashukha, Aleksei Silvestrov, Naejin Kong, Harshith Goka, Kiwoong Park, Victor Lempitsky.
 
+<br>
+
+--------------
+# NOTE:
+This codebase has been forked and used for research purposes in my final year project. 
+Modifications and enhancements have been made during a research-based project, including improvements to the image inpainting method over a fixed 50-epoch timeframe.
+
+<br>
+
+# Final Year Project - Image Inpainting Application (Research Based)
+I have performed the research on four existing image inpainting method and LaMa is the method that outperforms others three methods. So i decided to select LaMa as the inpainting method for making improvement within the fixed 50-epochs timeframe with Cifar10 dataset. Below is the detail of my final year project on researching existing image inpainting methods and perform improvement on it under fixed 50-epochs timeframe.
+
+<br>
+
+**Objective**:
+
+This research-focused final year project aimed to investigate and enhance existing image inpainting methodologies. The project utilized the Cifar10 dataset, with a fixed 50-epoch timeframe for performance evaluation.
+
+<br>
+
+**Methodology**:
+
+The project comprehensively examined and compared four image inpainting methodologies, including:
+- Score-based Generative Modeling Through Stochastic Differential Equations
+- Resolution-robust Large Mask Inpainting with Fourier Convolutions (LaMa)
+- Bayesian Image Reconstruction using Deep Generative Models
+- Variational Autoencoder with Arbitrary Conditioning
+
+<br>
+
+**Evaluation**:
+
+Evaluation encompassed both quantitative and qualitative assessments. Quantitative metrics included ℓ1 and ℓ2 loss, Structural Similarity Index (SSIM), Peak Signal-to-Noise Ratio (PSNR), Learned Perceptual Image Patch Similarity (LPIPS), and Frechet Inception Distance (FID). The LaMa model outperformed others in terms of metric scores and inpainted result quality, consequently being selected for further enhancement.
+
+<br>
+
+**Improvement / Enhancement**:
+
+The project explored various combinations of losses, ultimately identifying an optimized set that significantly improved the model's overall metric scores and enhanced the quality of image inpainting. The selected losses included:
+- GAN-based Reconstruction Loss
+- Edge Loss
+- Style Loss
+- Gradient Difference Loss
+- Multi-Scale Structural Similarity Index (MS-SSIM) Loss
+
+<br>
+
+**Result**:
+
+Through the integration of these novel loss functions, the LaMa image inpainting model was successfully enhanced, resulting in more visually pleasing and natural inpainted images.
+
+This project underscores my commitment to research-driven innovation and my ability to improve existing methodologies to achieve superior results.
+
+
+--------------
+
+
+
 <p align="center" "font-size:30px;">
   🔥🔥🔥
   <br>
